@@ -57,6 +57,45 @@ COALESCE(
     COALESCE(UPPER(stock_location), 'Unknown') AS stock_location
 FROM products;
 ```
+-----
+
+```sql
+WITH cleaned_products AS (
+    SELECT
+        product_id,
+        COALESCE(NULLIF(TRIM(product_type), ''), 'Unknown') AS product_type,
+        CASE
+            WHEN brand IS NULL OR TRIM(brand) IN ('', '-') THEN 'Unknown'
+            ELSE TRIM(brand)
+        END AS brand,
+        NULLIF(
+            TRIM(REPLACE(weight::TEXT, 'grams', '')),
+            ''
+        )::NUMERIC AS weight_clean,
+        price::NUMERIC AS price_clean,
+        COALESCE(average_units_sold, 0) AS average_units_sold,
+        COALESCE(year_added, 2022) AS year_added,
+        COALESCE(NULLIF(TRIM(stock_location), ''), 'Unknown') AS stock_location
+    FROM products
+),
+median_values AS (
+    SELECT
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY weight_clean) AS median_weight,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price_clean) AS median_price
+    FROM cleaned_products
+)
+SELECT
+    product_id,
+    product_type,
+    brand,
+    ROUND(COALESCE(weight_clean, median_weight)::NUMERIC, 2) AS weight,
+    ROUND(COALESCE(price_clean, median_price)::NUMERIC, 2) AS price,
+    average_units_sold,
+    year_added,
+    stock_location
+FROM cleaned_products
+CROSS JOIN median_values;
+```
 
 ---
 
@@ -65,13 +104,13 @@ FROM products;
 Find the minimum and maximum product price for each product type. Return `product_type`, `min_price`, and `max_price`.
 
 ```sql
-SELECT product_type,
-   MIN(price) AS min_price,
-   MAX(price) AS max_price
-FROM products 
+SELECT
+    product_type,
+    MIN(price) AS min_price,
+    MAX(price) AS max_price
+FROM products
 GROUP BY product_type;
 ```
-
 
 ---
 
@@ -80,8 +119,11 @@ GROUP BY product_type;
 Return `product_id`, `price`, and `average_units_sold` for Meat and Dairy products with an average monthly quantity sold greater than 10.
 
 ```sql
-SELECT product_id, price, average_units_sold
-FROM products 
-WHERE product_type IN ('Meat', 'Dairy')
-  AND average_units_sold > 10;
+SELECT
+    product_id,
+    price,
+    average_units_sold
+FROM products
+WHERE product_type IN ('Meat', 'Dairy') AND average_units_sold > 10;
+
 ```
