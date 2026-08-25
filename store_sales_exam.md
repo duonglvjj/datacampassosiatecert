@@ -35,13 +35,6 @@ FROM products
 WHERE year_added IS NULL;
 ```
 
-### Result
-
-| missing_year |
-|---:|
-| 170 |
-
----
 
 ## Task 2
 
@@ -65,24 +58,6 @@ COALESCE(
 FROM products;
 ```
 
-### Sample output
-
-| product_id | product_type | brand | weight | price | average_units_sold | year_added | stock_location |
-|---:|---|---|---:|---:|---:|---:|---|
-| 1 | Bakery | TopBrand | 602.61 | 11.00 | 15 | 2022 | C |
-| 2 | Produce | SilverLake | 478.26 | 8.08 | 22 | 2022 | C |
-| 3 | Produce | TastyTreat | 532.38 | 6.16 | 21 | 2018 | B |
-| 4 | Bakery | StandardYums | 453.43 | 7.26 | 21 | 2021 | D |
-| 5 | Produce | GoldTree | 588.63 | 7.88 | 21 | 2020 | A |
-| ... | ... | ... | ... | ... | ... | ... | ... |
-| 1696 | Meat | TastyTreat | 503.99 | 14.08 | 25 | 2017 | A |
-| 1697 | Meat | GoldTree | 526.89 | 16.13 | 25 | 2016 | D |
-| 1698 | Bakery | YumMie | 583.85 | 7.05 | 16 | 2021 | A |
-| 1699 | Produce | TopBrand | 441.64 | 8.10 | 19 | 2019 | A |
-| 1700 | Meat | TopBrand | 518.60 | 15.89 | 24 | 2021 | A |
-
-**Output:** 1,700 rows × 8 columns.
-
 ---
 
 ## Task 3
@@ -97,15 +72,6 @@ FROM products
 GROUP BY product_type;
 ```
 
-### Result
-
-| product_type | min_price | max_price |
-|---|---:|---:|
-| Snacks | 5.20 | 10.72 |
-| Produce | 3.46 | 8.78 |
-| Dairy | 8.33 | 13.97 |
-| Bakery | 6.26 | 11.88 |
-| Meat | 11.48 | 16.98 |
 
 ---
 
@@ -119,21 +85,3 @@ FROM products
 WHERE product_type IN ('Meat', 'Dairy')
   AND average_units_sold > 10;
 ```
-
-### Sample output
-
-| product_id | price | average_units_sold |
-|---:|---:|---:|
-| 6 | 16.20 | 24 |
-| 18 | 15.77 | 28 |
-| 29 | 11.57 | 30 |
-| 310 | 13.94 | 27 |
-| 411 | 9.26 | 26 |
-| ... | ... | ... |
-| 1694 | 16.00 | 25 |
-| 1695 | 12.88 | 20 |
-| 1696 | 14.08 | 25 |
-| 1697 | 16.13 | 25 |
-| 1700 | 15.89 | 24 |
-
-**Output:** 698 rows × 3 columns.
